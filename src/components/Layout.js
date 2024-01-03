@@ -1,5 +1,3 @@
-// components/Layout.js
-
 import Head from "next/head";
 
 const Layout = ({ children, title }) => {
