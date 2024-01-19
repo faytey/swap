@@ -4,7 +4,7 @@ const Layout = ({ children, title }) => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div
-        className="absolute inset-3 bg-gradient-to-tr from-purple-900  to-transparent via-transparent"
+        // className="absolute inset-3 bg-gradient-to-tr from-purple-900  to-transparent via-transparent"
         style={{
           animation: "glow 3s linear infinite alternate",
         }}

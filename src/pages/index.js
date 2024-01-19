@@ -13,15 +13,15 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 
 const Home = () => {
   const [oldTokenName, setOldTokenName] = useState("");
-  const [balanceOf, setBalanceOf] = useState("0");
+  const [balanceOf, setBalanceOf] = useState(0);
   const [symbol, setSymbol] = useState("");
   const [newTokenName, setNewTokenName] = useState("");
-  const [streetBalanceOf, setStreetBalanceOf] = useState("0");
+  const [streetBalanceOf, setStreetBalanceOf] = useState(0);
   const [streetSymbol, setStreetSymbol] = useState("");
-  // const [oldTokenName, setOldTokenName] = useState("");
   const { address } = useAccount();
 
   const mainStContract = {
@@ -91,35 +91,18 @@ const Home = () => {
   const balance = (Number(balances) / 1000000000).toLocaleString();
   const balanceTwo = (Number(streetBalances) / 1000000000).toLocaleString();
 
-  // const Write = async () => {
   const { config } = usePrepareContractWrite({
     ...mainStContract,
     functionName: "approve",
-    args: ["0x39CE211F00b78b934279364a696ab6A6c812Bb78", Number(balanceOf)],
+    args: ["0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89", 1000000000000000],
   });
 
   const { data, isLoading: writeLoad, write } = useContractWrite(config);
 
-  // const { config: convert } = usePrepareContractWrite({
-  //   address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-  //   abi: converter,
-  //   functionName: "convert",
-  // });
-
-  // const {
-  //   data: writeContract,
-  //   isLoading: writeLoading,
-  //   write: writeConvert,
-  // } = useContractWrite({
-  //   address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-  //   abi: converter,
-  //   functionName: "convert",
-  // });
-
-  const handleSubmit = (e) => {
+  const handleApprove = (e) => {
     e.preventDefault();
     write?.();
-    // writeConvert?.();
+    console.log("it's approving");
   };
 
   const {
@@ -135,26 +118,17 @@ const Home = () => {
 
     onSuccess(data) {
       console.log("Success Message: ", data);
-      // writeConvert?.();
+      const converter = async () => {
+        const convert = new ethers.Contract(
+          "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+          converter,
+          address
+        );
+        await convert.convert();
+      };
+      converter();
     },
   });
-
-  // const {
-  //   data: sendWait,
-  //   isError: errorWait,
-  //   isLoading: loadWait,
-  // } = useWaitForTransaction({
-  //   hash: writeConvert?.hash,
-
-  //   onError(error) {
-  //     console.log("Error Message: ", error);
-  //   },
-
-  //   onSuccess(data) {
-  //     console.log("Success Message: ", data);
-  //   },
-  // });
-  // };
 
   return (
     <Layout title="Token Swap">
@@ -192,10 +166,10 @@ const Home = () => {
           </div>
           <div className="flex flex-col items-center space-y-4"></div>
           <motion.button
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full hover:bg-opacity-80 transition duration-300 ease-in-out"
-            onClick={handleSubmit}
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
+            onClick={handleApprove}
           >
-            {writeLoad || loadWaitData ? "Converting" : "Convert Your Tokens"}
+            {writeLoad || loadWaitData ? "Converting" : "Convert Tokens"}
           </motion.button>
         </motion.div>
       </div>
