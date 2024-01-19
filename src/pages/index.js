@@ -13,7 +13,8 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { ethers, Web3Provider } from "ethers";
+import { useRouter } from "next/router";
 
 const Home = () => {
   const [oldTokenName, setOldTokenName] = useState("");
@@ -64,6 +65,7 @@ const Home = () => {
       {
         ...streetContract,
         functionName: "balanceOf",
+        args: [address],
       },
       {
         ...streetContract,
@@ -92,9 +94,10 @@ const Home = () => {
   const balanceTwo = (Number(streetBalances) / 1000000000).toLocaleString();
 
   const { config } = usePrepareContractWrite({
-    ...mainStContract,
+    address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
+    abi: prevAbi,
     functionName: "approve",
-    args: ["0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89", 1000000000000000],
+    args: ["0x39CE211F00b78b934279364a696ab6A6c812Bb78", 1000000000000000],
   });
 
   const { data, isLoading: writeLoad, write } = useContractWrite(config);
@@ -118,17 +121,39 @@ const Home = () => {
 
     onSuccess(data) {
       console.log("Success Message: ", data);
-      const converter = async () => {
-        const convert = new ethers.Contract(
-          "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-          converter,
-          address
-        );
-        await convert.convert();
-      };
-      converter();
+      // convertWrite?.();
     },
   });
+
+  const { config: convert } = usePrepareContractWrite({
+    address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+    abi: converter,
+    functionName: "convert",
+  });
+
+  const {
+    data: convertData,
+    isLoading: convertLoad,
+    write: convertWrite,
+  } = useContractWrite(convert);
+
+  const handleConvert = (e) => {
+    e.preventDefault();
+    console.log("it's converting");
+  };
+
+  const { data: convertWaitData, isLoading: convertLoading } =
+    useWaitForTransaction({
+      hash: convertData?.hash,
+
+      onError(error) {
+        console.log("Error Message: ", error);
+      },
+
+      onSuccess(data) {
+        console.log("Success Message: ", data);
+      },
+    });
 
   return (
     <Layout title="Token Swap">
@@ -169,7 +194,13 @@ const Home = () => {
             className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
             onClick={handleApprove}
           >
-            {writeLoad || loadWaitData ? "Converting" : "Convert Tokens"}
+            {writeLoad || loadWaitData ? "Approving" : "Approve"}
+          </motion.button>
+          <motion.button
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
+            onClick={handleConvert}
+          >
+            {convertLoad || convertLoading ? "Converting" : "Convert Tokens"}
           </motion.button>
         </motion.div>
       </div>

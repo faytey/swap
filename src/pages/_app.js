@@ -9,14 +9,14 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 const { chains, publicClient } = configureChains(
   [bsc, bscTestnet],
-  // [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
-  [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: "https://bsc-dataseed.binance.org/",
-      }),
-    }),
-  ]
+  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  // [
+  //   jsonRpcProvider({
+  //     rpc: (chain) => ({
+  //       http: "https://bsc-dataseed.binance.org/",
+  //     }),
+  //   }),
+  // ]
 );
 const { connectors } = getDefaultWallets({
   appName: "My Swap App",
