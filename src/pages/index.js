@@ -85,7 +85,7 @@ const Home = () => {
     setNewTokenName(readData?.[4]?.result);
     setStreetBalanceOf(readData?.[5]?.result);
     setStreetSymbol(readData?.[6]?.result);
-  }, []);
+  }, [readData, balanceOf, streetBalanceOf]);
 
   const balances = String(balanceOf);
   const streetBalances = String(streetBalanceOf);
