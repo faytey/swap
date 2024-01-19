@@ -23,7 +23,7 @@ const Home = () => {
   const [newTokenName, setNewTokenName] = useState("");
   const [streetBalanceOf, setStreetBalanceOf] = useState(0);
   const [streetSymbol, setStreetSymbol] = useState("");
-  const { address } = useAccount();
+  const { address, isConnected, isDisconnected } = useAccount();
 
   const mainStContract = {
     address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
@@ -177,32 +177,51 @@ const Home = () => {
         >
           Swap your MainStreet tokens for Street tokens
         </motion.p>
-        <motion.div
-          className="flex flex-col items-center space-y-4"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-        >
-          <div className="flex flex-col items-center space-y-4">
-            Your {oldTokenName} token balance is {balance} {symbol}
-          </div>
-          <div className="flex flex-col items-center space-y-4">
-            Your {newTokenName} token balance is {balanceTwo} {streetSymbol}
-          </div>
-          <div className="flex flex-col items-center space-y-4"></div>
-          <motion.button
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
-            onClick={handleApprove}
+        {isDisconnected ? (
+          <motion.div
+            className="flex flex-col items-center space-y-4"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            suppressHydrationWarning
           >
-            {writeLoad || loadWaitData ? "Approving" : "Approve"}
-          </motion.button>
-          <motion.button
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
-            onClick={handleConvert}
+            <div
+              className="flex flex-col items-center space-y-4"
+              suppressHydrationWarning={true}
+            >
+              Kindly connect your wallet
+            </div>
+            <ConnectButton />
+          </motion.div>
+        ) : (
+          <motion.div
+            className="flex flex-col items-center space-y-4"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
           >
-            {convertLoad || convertLoading ? "Converting" : "Convert Tokens"}
-          </motion.button>
-        </motion.div>
+            <div className="flex flex-col items-center space-y-4">
+              Your {oldTokenName} token balance is{" "}
+              {balance == NaN || undefined || null ? 0 : balance} {symbol}
+            </div>
+            <div className="flex flex-col items-center space-y-4">
+              Your {newTokenName} token balance is {balanceTwo} {streetSymbol}
+            </div>
+            <div className="flex flex-col items-center space-y-4"></div>
+            <motion.button
+              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
+              onClick={handleApprove}
+            >
+              {writeLoad || loadWaitData ? "Approving" : "Approve"}
+            </motion.button>
+            <motion.button
+              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
+              onClick={handleConvert}
+            >
+              {convertLoad || convertLoading ? "Converting" : "Convert Tokens"}
+            </motion.button>
+          </motion.div>
+        )}
       </div>
     </Layout>
   );
