@@ -13,8 +13,8 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useEffect, useState } from "react";
-import { ethers, Web3Provider } from "ethers";
-import { useRouter } from "next/router";
+import logo from "../../public/IMG_20240120_111606_344.PNG";
+import Image from "next/image";
 
 const Home = () => {
   const [oldTokenName, setOldTokenName] = useState("");
@@ -160,22 +160,22 @@ const Home = () => {
       <div className="container pt-5 flex justify-end">
         <ConnectButton />
       </div>
-      <div className="container mx-auto pt-20 text-center">
-        <motion.h1
-          className="text-5xl font-bold mb-6 text-gradient"
+      <div className="container mx-auto pt-10 text-center">
+        <motion.div
+          className="text-5xl font-bold mb-6 text-gradient flex justify-center"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          Token Swap
-        </motion.h1>
+          <Image src={logo} width={200} height={200} alt="street swap logo" />
+        </motion.div>
         <motion.p
           className="text-lg mb-8 opacity-80"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          Swap your MainStreet tokens for Street tokens
+          Swap your MAINST tokens for Street tokens
         </motion.p>
         {isDisconnected ? (
           <motion.div
