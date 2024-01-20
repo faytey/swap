@@ -121,7 +121,7 @@ const Home = () => {
 
     onSuccess(data) {
       console.log("Success Message: ", data);
-      // convertWrite?.();
+      convertWrite?.();
     },
   });
 
@@ -137,10 +137,10 @@ const Home = () => {
     write: convertWrite,
   } = useContractWrite(convert);
 
-  const handleConvert = (e) => {
-    e.preventDefault();
-    console.log("it's converting");
-  };
+  // const handleConvert = (e) => {
+  //   e.preventDefault();
+  //   console.log("it's converting");
+  // };
 
   const { data: convertWaitData, isLoading: convertLoading } =
     useWaitForTransaction({
@@ -212,14 +212,16 @@ const Home = () => {
               className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
               onClick={handleApprove}
             >
-              {writeLoad || loadWaitData ? "Approving" : "Approve"}
+              {writeLoad || loadWaitData || convertLoad || convertLoading
+                ? "Converting"
+                : "Convert Tokens"}
             </motion.button>
-            <motion.button
+            {/* <motion.button
               className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
               onClick={handleConvert}
             >
               {convertLoad || convertLoading ? "Converting" : "Convert Tokens"}
-            </motion.button>
+            </motion.button> */}
           </motion.div>
         )}
       </div>
