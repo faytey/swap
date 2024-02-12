@@ -19,7 +19,7 @@ const { chains, publicClient } = configureChains(
   // ]
 );
 const { connectors } = getDefaultWallets({
-  appName: "My Swap App",
+  appName: "Street App",
   projectId: "ba5022e3d5959b0901411949b04d2b3b",
   chains,
 });

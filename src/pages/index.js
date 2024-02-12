@@ -137,11 +137,6 @@ const Home = () => {
     write: convertWrite,
   } = useContractWrite(convert);
 
-  // const handleConvert = (e) => {
-  //   e.preventDefault();
-  //   console.log("it's converting");
-  // };
-
   const { data: convertWaitData, isLoading: convertLoading } =
     useWaitForTransaction({
       hash: convertData?.hash,
@@ -156,7 +151,7 @@ const Home = () => {
     });
 
   return (
-    <Layout title="Token Swap">
+    <Layout title="Street Token">
       <div className="container pt-5 flex justify-end">
         <ConnectButton />
       </div>
@@ -216,12 +211,6 @@ const Home = () => {
                 ? "Converting"
                 : "Convert Tokens"}
             </motion.button>
-            {/* <motion.button
-              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
-              onClick={handleConvert}
-            >
-              {convertLoad || convertLoading ? "Converting" : "Convert Tokens"}
-            </motion.button> */}
           </motion.div>
         )}
       </div>
