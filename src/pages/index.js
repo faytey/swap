@@ -104,12 +104,7 @@ const Home = () => {
   const handleApprove = (e) => {
     e.preventDefault();
     if (String(readData?.[6]?.result) >= balances) {
-      convertWrite?.({
-        address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-        abi: converter,
-        functionName: "convert",
-      });
-      console.log("Converting ....");
+      handleConvert();
     } else {
       writeContract?.({
         address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
@@ -128,41 +123,31 @@ const Home = () => {
     data: sendWaitData,
     isError: errorWaitData,
     isLoading: loadWaitData,
+    isSuccess: isConfirmed,
   } = useWaitForTransactionReceipt({
-    hash: data?.hash,
-
-    onError(error) {
-      console.log("Error Message: ", error);
-    },
-
-    onSuccess(data) {
-      console.log("Success Message: ", data);
-      convertWrite?.({
-        address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-        abi: converter,
-        functionName: "convert",
-      });
-    },
+    hash: data,
   });
 
   const {
     data: convertData,
     isPending: convertPending,
     writeContract: convertWrite,
+    isSuccess: convertSuccess,
   } = useWriteContract();
 
   const { data: convertWaitData, isLoading: convertLoading } =
     useWaitForTransactionReceipt({
-      hash: convertData?.hash,
-
-      onError(error) {
-        console.log("Error Message: ", error);
-      },
-
-      onSuccess(data) {
-        console.log("Success Message: ", data);
-      },
+      hash: convertData,
     });
+
+  const handleConvert = () => {
+    convertWrite?.({
+      address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+      abi: converter,
+      functionName: "convert",
+    });
+    console.log("Converting");
+  };
 
   return (
     <Layout title="Street Token">
@@ -207,7 +192,7 @@ const Home = () => {
           >
             <p className="flex flex-col items-center space-y-4">
               Your {oldTokenName} token balance is{" "}
-              {isNaN(balance) ? 0 : balance} {symbol}
+              {balance == NaN || undefined || null ? 0 : balance} {symbol}
             </p>
             <p className="flex flex-col items-center space-y-4">
               Your {newTokenName} token balance is {balanceTwo} {streetSymbol}
@@ -219,6 +204,7 @@ const Home = () => {
               {isPending || convertPending || loadWaitData || convertLoading
                 ? "Converting"
                 : "Convert Tokens"}
+              {/* {isConfirmed && handleConvert()} */}
             </motion.button>
           </motion.div>
         )}
