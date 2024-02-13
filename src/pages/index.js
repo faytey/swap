@@ -8,7 +8,6 @@ import converter from "../utils/converterAbi.json";
 import {
   useAccount,
   useReadContracts,
-  useSimulateContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
@@ -95,22 +94,19 @@ const Home = () => {
   const balance = (Number(balances) / 1000000000).toLocaleString();
   const balanceTwo = (Number(streetBalances) / 1000000000).toLocaleString();
 
-  const { data: configData } = useSimulateContract({
-    address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
-    abi: prevAbi,
-    functionName: "approve",
-    args: ["0x39CE211F00b78b934279364a696ab6A6c812Bb78", 1000000000000000],
-  });
+  const { data, isPending, writeContract } = useWriteContract();
 
-  const {
-    data,
-    isLoading: writeLoad,
-    writeContract,
-  } = useWriteContract(configData);
-
-  const handleApprove = async (e) => {
+  const handleApprove = (e) => {
     e.preventDefault();
-    await writeContract?.();
+    writeContract?.({
+      address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
+      abi: prevAbi,
+      functionName: "approve",
+      args: [
+        "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+        readData?.[1]?.result,
+      ],
+    });
     console.log("it's approving");
   };
 
@@ -127,21 +123,19 @@ const Home = () => {
 
     onSuccess(data) {
       console.log("Success Message: ", data);
-      convertWrite?.();
+      convertWrite?.({
+        address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+        abi: converter,
+        functionName: "convert",
+      });
     },
-  });
-
-  const { data: convert } = useSimulateContract({
-    address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-    abi: converter,
-    functionName: "convert",
   });
 
   const {
     data: convertData,
-    isLoading: convertLoad,
+    isPending: convertPending,
     writeContract: convertWrite,
-  } = useWriteContract(convert);
+  } = useWriteContract();
 
   const { data: convertWaitData, isLoading: convertLoading } =
     useWaitForTransactionReceipt({
@@ -208,7 +202,7 @@ const Home = () => {
               className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
               onClick={handleApprove}
             >
-              {writeLoad || loadWaitData || convertLoad || convertLoading
+              {isPending || convertPending || loadWaitData || convertLoading
                 ? "Converting"
                 : "Convert Tokens"}
             </motion.button>
