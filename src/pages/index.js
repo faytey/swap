@@ -103,7 +103,7 @@ const Home = () => {
 
   const handleApprove = (e) => {
     e.preventDefault();
-    if (String(readData?.[6]?.result) >= balances) {
+    if (isConfirmed) {
       handleConvert();
     } else {
       writeContract?.({
@@ -115,6 +115,7 @@ const Home = () => {
           readData?.[1]?.result,
         ],
       });
+      handleConvert();
       console.log("it's approving");
     }
   };
