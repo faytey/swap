@@ -7,10 +7,10 @@ import newAbi from "../utils/newTokenAbi.json";
 import converter from "../utils/converterAbi.json";
 import {
   useAccount,
-  useContractReads,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
+  useReadContracts,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
 import { useEffect, useState } from "react";
 import logo from "../../public/IMG_20240120_111606_344.PNG";
@@ -39,7 +39,7 @@ const Home = () => {
     data: readData,
     isError,
     isLoading,
-  } = useContractReads({
+  } = useReadContracts({
     contracts: [
       {
         ...mainStContract,
@@ -79,6 +79,8 @@ const Home = () => {
   });
 
   useEffect(() => {
+    console.log("readData:", readData); // Log the readData
+
     setOldTokenName(readData?.[0]?.result);
     setBalanceOf(readData?.[1]?.result);
     setSymbol(readData?.[2]?.result);
@@ -93,18 +95,22 @@ const Home = () => {
   const balance = (Number(balances) / 1000000000).toLocaleString();
   const balanceTwo = (Number(streetBalances) / 1000000000).toLocaleString();
 
-  const { config } = usePrepareContractWrite({
+  const { data: configData } = useSimulateContract({
     address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
     abi: prevAbi,
     functionName: "approve",
     args: ["0x39CE211F00b78b934279364a696ab6A6c812Bb78", 1000000000000000],
   });
 
-  const { data, isLoading: writeLoad, write } = useContractWrite(config);
+  const {
+    data,
+    isLoading: writeLoad,
+    writeContract,
+  } = useWriteContract(configData);
 
-  const handleApprove = (e) => {
+  const handleApprove = async (e) => {
     e.preventDefault();
-    write?.();
+    await writeContract?.();
     console.log("it's approving");
   };
 
@@ -112,7 +118,7 @@ const Home = () => {
     data: sendWaitData,
     isError: errorWaitData,
     isLoading: loadWaitData,
-  } = useWaitForTransaction({
+  } = useWaitForTransactionReceipt({
     hash: data?.hash,
 
     onError(error) {
@@ -125,7 +131,7 @@ const Home = () => {
     },
   });
 
-  const { config: convert } = usePrepareContractWrite({
+  const { data: convert } = useSimulateContract({
     address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
     abi: converter,
     functionName: "convert",
@@ -134,11 +140,11 @@ const Home = () => {
   const {
     data: convertData,
     isLoading: convertLoad,
-    write: convertWrite,
-  } = useContractWrite(convert);
+    writeContract: convertWrite,
+  } = useWriteContract(convert);
 
   const { data: convertWaitData, isLoading: convertLoading } =
-    useWaitForTransaction({
+    useWaitForTransactionReceipt({
       hash: convertData?.hash,
 
       onError(error) {
@@ -178,14 +184,10 @@ const Home = () => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            suppressHydrationWarning
           >
-            <div
-              className="flex flex-col items-center space-y-4"
-              suppressHydrationWarning={true}
-            >
+            <p className="flex flex-col items-center space-y-4">
               Kindly connect your wallet
-            </div>
+            </p>
             <ConnectButton />
           </motion.div>
         ) : (
@@ -195,14 +197,13 @@ const Home = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
           >
-            <div className="flex flex-col items-center space-y-4">
+            <p className="flex flex-col items-center space-y-4">
               Your {oldTokenName} token balance is{" "}
-              {balance == NaN || undefined || null ? 0 : balance} {symbol}
-            </div>
-            <div className="flex flex-col items-center space-y-4">
+              {isNaN(balance) ? 0 : balance} {symbol}
+            </p>
+            <p className="flex flex-col items-center space-y-4">
               Your {newTokenName} token balance is {balanceTwo} {streetSymbol}
-            </div>
-            <div className="flex flex-col items-center space-y-4"></div>
+            </p>
             <motion.button
               className="bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:cursor-pointer px-8 py-4 rounded-full transition duration-300 ease-in-out"
               onClick={handleApprove}
