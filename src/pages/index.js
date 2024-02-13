@@ -74,6 +74,11 @@ const Home = () => {
         ...streetContract,
         functionName: "decimal",
       },
+      {
+        ...mainStContract,
+        functionName: "allowance",
+        args: [address, "0x39CE211F00b78b934279364a696ab6A6c812Bb78"],
+      },
     ],
   });
 
@@ -98,16 +103,25 @@ const Home = () => {
 
   const handleApprove = (e) => {
     e.preventDefault();
-    writeContract?.({
-      address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
-      abi: prevAbi,
-      functionName: "approve",
-      args: [
-        "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
-        readData?.[1]?.result,
-      ],
-    });
-    console.log("it's approving");
+    if (String(readData?.[6]?.result) >= balances) {
+      convertWrite?.({
+        address: "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+        abi: converter,
+        functionName: "convert",
+      });
+      console.log("Converting ....");
+    } else {
+      writeContract?.({
+        address: "0x8fc1a944c149762b6b578a06c0de2abd6b7d2b89",
+        abi: prevAbi,
+        functionName: "approve",
+        args: [
+          "0x39CE211F00b78b934279364a696ab6A6c812Bb78",
+          readData?.[1]?.result,
+        ],
+      });
+      console.log("it's approving");
+    }
   };
 
   const {
